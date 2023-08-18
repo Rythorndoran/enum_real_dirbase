@@ -1,0 +1,77 @@
+;
+; enum_real_dirbase.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=enum_real_dirbase.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+enum_real_dirbase_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+enum_real_dirbase.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%enum_real_dirbase.DeviceDesc%=enum_real_dirbase_Device, Root\enum_real_dirbase ; TODO: edit hw-id
+
+[enum_real_dirbase_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+enum_real_dirbase.sys
+
+;-------------- Service installation
+[enum_real_dirbase_Device.NT.Services]
+AddService = enum_real_dirbase,%SPSVCINST_ASSOCSERVICE%, enum_real_dirbase_Service_Inst
+
+; -------------- enum_real_dirbase driver install sections
+[enum_real_dirbase_Service_Inst]
+DisplayName    = %enum_real_dirbase.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\enum_real_dirbase.sys
+
+;
+;--- enum_real_dirbase_Device Coinstaller installation ------
+;
+
+[enum_real_dirbase_Device.NT.CoInstallers]
+AddReg=enum_real_dirbase_Device_CoInstaller_AddReg
+CopyFiles=enum_real_dirbase_Device_CoInstaller_CopyFiles
+
+[enum_real_dirbase_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[enum_real_dirbase_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[enum_real_dirbase_Device.NT.Wdf]
+KmdfService =  enum_real_dirbase, enum_real_dirbase_wdfsect
+[enum_real_dirbase_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "enum_real_dirbase Installation Disk"
+enum_real_dirbase.DeviceDesc = "enum_real_dirbase Device"
+enum_real_dirbase.SVCDESC = "enum_real_dirbase Service"
