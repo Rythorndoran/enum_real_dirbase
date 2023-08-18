@@ -215,10 +215,6 @@ uintptr_t init_mmpfn_database() {
 	return mm_pfn_database;
 }
 
-uintptr_t get_ptebase() {
-	return 0xffffd68000000000;
-}
-
 void enum_process_dirbase() {
 	auto mem_range = MmGetPhysicalMemoryRanges();
 	auto mem_range_count = 0;
